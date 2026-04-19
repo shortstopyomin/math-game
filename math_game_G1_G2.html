@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可愛奶茶店：數學大挑戰</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            background-color: #fff9e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 5px solid #ffcc00;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h1 {
+            color: #8b4513;
+            margin-top: 0;
+        }
+
+        .cover-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        /* 題目區域 */
+        .question-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #5d4037;
+            line-height: 1.5;
+        }
+
+        .visual-area {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            min-height: 120px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fffdf0;
+            border-radius: 20px;
+        }
+
+        .tea-cup {
+            font-size: 50px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .tea-cup.drunk::after {
+            content: "❌";
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 45px;
+            opacity: 0.8;
+        }
+
+        /* 輸入與按鈕 */
+        input[type="number"] {
+            font-size: 28px;
+            width: 80px;
+            padding: 10px;
+            border: 3px solid #ffcc00;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+        }
+
+        .btn {
+            font-size: 20px;
+            padding: 12px 35px;
+            background-color: #ffcc00;
+            color: #5d4037;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background-color: #ffbb00;
+            transform: scale(1.05);
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        /* 成功畫面特效 */
+        .success-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game-container">
+
+        <div id="start-screen" class="screen active">
+            <div class="cover-icon">🧋✨</div>
+            <h1>可愛奶茶店</h1>
+            <p style="font-size: 18px; color: #d2691e;">幫店長算算剩下的奶茶吧！</p>
+            <button class="btn" onclick="startGame()">點擊闖關開始</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="question-text" id="question"></div>
+            <div class="visual-area" id="visual-area"></div>
+            <div class="input-area">
+                剩下 <input type="number" id="answer-input" placeholder="?" onkeyup="if(event.keyCode==13) checkAnswer()">
+                杯
+                <button class="btn" onclick="checkAnswer()">送出答案</button>
+            </div>
+            <div id="message"></div>
+        </div>
+
+        <div id="success-screen" class="screen">
+            <div class="success-icon">🏆</div>
+            <h1 style="color: #4caf50;">闖關成功！</h1>
+            <p style="font-size: 20px;">你真是數學小高手！</p>
+            <button class="btn" onclick="resetToHome()">再玩一次</button>
+        </div>
+
+    </div>
+
+    <script>
+        let remainingCups = 0;
+
+        function startGame() {
+            showScreen('game-screen');
+            generateQuestion();
+        }
+
+        function resetToHome() {
+            showScreen('start-screen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function generateQuestion() {
+            // 隨機出題
+            const total = Math.floor(Math.random() * 7) + 3; // 3~9杯
+            const drunk = Math.floor(Math.random() * (total - 1)) + 1;
+            remainingCups = total - drunk;
+
+            // 更新文字與清空狀態
+            document.getElementById('question').innerText = `店長做了 ${total} 杯奶茶，同學喝掉 ${drunk} 杯，還剩下幾杯？`;
+            document.getElementById('answer-input').value = '';
+            document.getElementById('message').innerText = '';
+
+            // 繪製圖示
+            const area = document.getElementById('visual-area');
+            area.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const cup = document.createElement('span');
+                cup.className = 'tea-cup' + (i < drunk ? ' drunk' : '');
+                cup.innerText = '🧋';
+                area.appendChild(cup);
+            }
+            document.getElementById('answer-input').focus();
+        }
+
+        function checkAnswer() {
+            const val = parseInt(document.getElementById('answer-input').value);
+            const msg = document.getElementById('message');
+
+            if (isNaN(val)) return;
+
+            if (val === remainingCups) {
+                // 成功：跳轉到成功畫面
+                showScreen('success-screen');
+            } else {
+                // 失敗：秀出錯誤提示，並維持在原題目讓使用者繼續嘗試
+                msg.innerText = "❌ 答案錯誤，再數數看喔！";
+                msg.style.color = "#f44336";
+                document.getElementById('answer-input').value = '';
+                document.getElementById('answer-input').focus();
+            }
+        }
+    </script>
+</body>
+
+</html>
