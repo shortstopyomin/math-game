@@ -16,6 +16,8 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .game-container {
@@ -138,6 +140,50 @@
                 transform: translateY(-20px);
             }
         }
+
+        /* 虛擬鍵盤 */
+        .keyboard-container {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 5px solid #4caf50;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 250px;
+        }
+
+        .keyboard-container.active {
+            display: grid;
+        }
+
+        .key-btn {
+            font-size: 28px;
+            padding: 15px 0;
+            background-color: #f1f8e9;
+            color: #33691e;
+            border: 3px solid #aed581;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.1s;
+            text-align: center;
+            user-select: none;
+        }
+
+        .key-btn:hover {
+            background-color: #dcedc8;
+        }
+
+        .key-btn:active {
+            background-color: #aed581;
+            transform: scale(0.95);
+        }
+
+        .key-zero {
+            grid-column: span 2;
+        }
     </style>
 </head>
 
@@ -180,6 +226,20 @@
 
     </div>
 
+    <div class="keyboard-container" id="virtual-keyboard">
+        <button class="key-btn" onclick="typeKey(1)">1</button>
+        <button class="key-btn" onclick="typeKey(2)">2</button>
+        <button class="key-btn" onclick="typeKey(3)">3</button>
+        <button class="key-btn" onclick="typeKey(4)">4</button>
+        <button class="key-btn" onclick="typeKey(5)">5</button>
+        <button class="key-btn" onclick="typeKey(6)">6</button>
+        <button class="key-btn" onclick="typeKey(7)">7</button>
+        <button class="key-btn" onclick="typeKey(8)">8</button>
+        <button class="key-btn" onclick="typeKey(9)">9</button>
+        <button class="key-btn key-zero" onclick="typeKey(0)">0</button>
+        <button class="key-btn" onclick="typeKey('del')">⌫</button>
+    </div>
+
     <script>
         let remainingCups = 0;
         let currentGrade = 1;
@@ -197,6 +257,23 @@
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+
+            const keyboard = document.getElementById('virtual-keyboard');
+            if (screenId === 'game-screen') {
+                keyboard.classList.add('active');
+            } else {
+                keyboard.classList.remove('active');
+            }
+        }
+
+        function typeKey(key) {
+            const input = document.getElementById('answer-input');
+            if (key === 'del') {
+                input.value = input.value.slice(0, -1);
+            } else {
+                input.value += key;
+            }
+            input.focus();
         }
 
         function generateQuestion() {
