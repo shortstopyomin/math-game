@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>可愛奶茶店：數學大挑戰</title>
+    <title>AI奶茶店：數學大挑戰</title>
     <style>
         body {
             font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
@@ -12,19 +12,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .game-container {
             background: white;
-            padding: 40px;
+            padding: 20px 30px;
             border-radius: 30px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
+            max-width: 600px;
+            width: 95%;
             text-align: center;
             border: 5px solid #ffcc00;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .screen {
@@ -47,20 +51,20 @@
 
         /* 題目區域 */
         .question-text {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 20px;
+            margin-bottom: 10px;
             color: #5d4037;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .visual-area {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            min-height: 120px;
-            margin: 20px 0;
-            padding: 20px;
+            gap: 10px;
+            min-height: 100px;
+            margin: 10px 0;
+            padding: 15px;
             background: #fffdf0;
             border-radius: 20px;
         }
@@ -143,16 +147,24 @@
 
         <div id="start-screen" class="screen active">
             <div class="cover-icon">🧋✨</div>
-            <h1>可愛奶茶店</h1>
+            <h1>AI奶茶店</h1>
             <p style="font-size: 18px; color: #d2691e;">幫店長算算剩下的奶茶吧！</p>
-            <button class="btn" onclick="startGame()">點擊闖關開始</button>
+            <div style="margin-top:20px;">
+                <button class="btn" onclick="startGame(1)">小學一二年級</button>
+                <button class="btn" style="background-color: #4caf50; color: white;"
+                    onclick="startGame(3)">小學三四年級</button>
+            </div>
         </div>
 
         <div id="game-screen" class="screen">
+            <div id="grade-hint"
+                style="display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; color: #5d4037; font-size: 18px; background-color: #ffe0b2;">
+            </div>
             <div class="question-text" id="question"></div>
             <div class="visual-area" id="visual-area"></div>
             <div class="input-area">
-                剩下 <input type="number" id="answer-input" placeholder="?" onkeyup="if(event.keyCode==13) checkAnswer()">
+                <span id="prefix-text">剩下</span> <input type="number" id="answer-input" placeholder="?"
+                    onkeyup="if(event.keyCode==13) checkAnswer()">
                 杯
                 <button class="btn" onclick="checkAnswer()">送出答案</button>
             </div>
@@ -170,8 +182,10 @@
 
     <script>
         let remainingCups = 0;
+        let currentGrade = 1;
 
-        function startGame() {
+        function startGame(grade) {
+            currentGrade = grade;
             showScreen('game-screen');
             generateQuestion();
         }
@@ -186,24 +200,71 @@
         }
 
         function generateQuestion() {
-            // 隨機出題
-            const total = Math.floor(Math.random() * 7) + 3; // 3~9杯
-            const drunk = Math.floor(Math.random() * (total - 1)) + 1;
-            remainingCups = total - drunk;
-
-            // 更新文字與清空狀態
-            document.getElementById('question').innerText = `店長做了 ${total} 杯奶茶，同學喝掉 ${drunk} 杯，還剩下幾杯？`;
+            // 清空狀態
             document.getElementById('answer-input').value = '';
             document.getElementById('message').innerText = '';
-
-            // 繪製圖示
             const area = document.getElementById('visual-area');
             area.innerHTML = '';
-            for (let i = 0; i < total; i++) {
-                const cup = document.createElement('span');
-                cup.className = 'tea-cup' + (i < drunk ? ' drunk' : '');
-                cup.innerText = '🧋';
-                area.appendChild(cup);
+            // 重置預設樣式
+            area.style.gap = '';
+            area.style.padding = '';
+
+            const gradeHint = document.getElementById('grade-hint');
+            const prefixText = document.getElementById('prefix-text');
+
+            if (currentGrade === 1) {
+                gradeHint.innerText = '✏️ 小學一二年級挑戰';
+                gradeHint.style.backgroundColor = '#ffe0b2';
+                prefixText.innerText = '剩下 ';
+
+                // 一二年級：減法題型
+                const total = Math.floor(Math.random() * 10) + 5; // 5~14杯
+                const drunk = Math.floor(Math.random() * (total - 1)) + 1;
+                remainingCups = total - drunk;
+
+                document.getElementById('question').innerText = `店長做了 ${total} 杯奶茶，同學喝掉 ${drunk} 杯，還剩下幾杯？`;
+
+                for (let i = 0; i < total; i++) {
+                    const cup = document.createElement('span');
+                    cup.className = 'tea-cup' + (i < drunk ? ' drunk' : '');
+                    cup.innerText = '🧋';
+                    cup.style.fontSize = "40px"; // 縮小預設杯子
+                    area.appendChild(cup);
+                }
+            } else {
+                gradeHint.innerText = '✏️ 小學三四年級挑戰';
+                gradeHint.style.backgroundColor = '#c8e6c9';
+                prefixText.innerText = '共有 ';
+
+                // 讓三四年級畫面更緊湊
+                area.style.gap = '5px';
+                area.style.padding = '5px';
+
+                // 三四年級：乘法題型
+                const boxes = Math.floor(Math.random() * 4) + 2; // 2~5 盒
+                const cupsPerBox = Math.floor(Math.random() * 5) + 2; // 2~6 杯
+                remainingCups = boxes * cupsPerBox;
+
+                document.getElementById('question').innerText = `店長裝了 ${boxes} 盒奶茶，每一盒裡面有 ${cupsPerBox} 杯，總共有幾杯奶茶？`;
+
+                for (let i = 0; i < boxes; i++) {
+                    const boxDiv = document.createElement('div');
+                    boxDiv.style.border = "2px dashed #8b4513";
+                    boxDiv.style.padding = "5px 10px";
+                    boxDiv.style.borderRadius = "15px";
+                    boxDiv.style.margin = "3px";
+                    boxDiv.style.backgroundColor = "rgba(139, 69, 19, 0.05)";
+
+                    for (let j = 0; j < cupsPerBox; j++) {
+                        const cup = document.createElement('span');
+                        cup.className = 'tea-cup';
+                        cup.innerText = '🧋';
+                        cup.style.fontSize = "26px"; // 緊湊縮小杯子
+                        cup.style.lineHeight = "1.2";
+                        boxDiv.appendChild(cup);
+                    }
+                    area.appendChild(boxDiv);
+                }
             }
             document.getElementById('answer-input').focus();
         }
