@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G6奶茶店：數學大挑戰</title>
+    <title>G8苦茶店：數學大挑戰</title>
     <style>
         body {
             font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
@@ -192,9 +192,9 @@
     <div class="game-container">
 
         <div id="start-screen" class="screen active">
-            <div class="cover-icon">🧋✨</div>
-            <h1>G6奶茶店</h1>
-            <p style="font-size: 18px; color: #d2691e;">幫店長算算剩下的奶茶吧！</p>
+            <div class="cover-icon">🍵✨</div>
+            <h1>G8苦茶店</h1>
+            <p style="font-size: 18px; color: #d2691e;">幫店長算算剩下的苦茶吧！</p>
             <div style="margin-top:20px;">
                 <button class="btn" onclick="startGame(1)">小學一二年級</button>
                 <button class="btn" style="background-color: #4caf50; color: white;"
@@ -299,12 +299,12 @@
                 const drunk = Math.floor(Math.random() * (total - 1)) + 1;
                 remainingCups = total - drunk;
 
-                document.getElementById('question').innerText = `店長做了 ${total} 杯奶茶，同學喝掉 ${drunk} 杯，還剩下幾杯？`;
+                document.getElementById('question').innerText = `店長做了 ${total} 杯苦茶，同學喝掉 ${drunk} 杯，還剩下幾杯？`;
 
                 for (let i = 0; i < total; i++) {
                     const cup = document.createElement('span');
                     cup.className = 'tea-cup' + (i < drunk ? ' drunk' : '');
-                    cup.innerText = '🧋';
+                    cup.innerText = '🍵';
                     cup.style.fontSize = "40px"; // 縮小預設杯子
                     area.appendChild(cup);
                 }
@@ -322,7 +322,7 @@
                 const cupsPerBox = Math.floor(Math.random() * 5) + 2; // 2~6 杯
                 remainingCups = boxes * cupsPerBox;
 
-                document.getElementById('question').innerText = `店長裝了 ${boxes} 盒奶茶，每一盒裡面有 ${cupsPerBox} 杯，總共有幾杯奶茶？`;
+                document.getElementById('question').innerText = `店長裝了 ${boxes} 盒苦茶，每一盒裡面有 ${cupsPerBox} 杯，總共有幾杯苦茶？`;
 
                 for (let i = 0; i < boxes; i++) {
                     const boxDiv = document.createElement('div');
@@ -335,7 +335,7 @@
                     for (let j = 0; j < cupsPerBox; j++) {
                         const cup = document.createElement('span');
                         cup.className = 'tea-cup';
-                        cup.innerText = '🧋';
+                        cup.innerText = '🍵';
                         cup.style.fontSize = "26px"; // 緊湊縮小杯子
                         cup.style.lineHeight = "1.2";
                         boxDiv.appendChild(cup);
