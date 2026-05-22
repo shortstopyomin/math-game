@@ -199,6 +199,8 @@
                 <button class="btn" onclick="startGame(1)">小學一二年級</button>
                 <button class="btn" style="background-color: #4caf50; color: white;"
                     onclick="startGame(3)">小學三四年級</button>
+                <button class="btn" style="background-color: #e65100; color: white;"
+                    onclick="startGame(8)">國中八年級</button>
             </div>
         </div>
 
@@ -211,7 +213,7 @@
             <div class="input-area">
                 <span id="prefix-text">剩下</span> <input type="number" id="answer-input" placeholder="?"
                     onkeyup="if(event.keyCode==13) checkAnswer()">
-                杯
+                <span id="suffix-text">杯</span>
                 <button class="btn" onclick="checkAnswer()">送出答案</button>
             </div>
             <div id="message"></div>
@@ -293,6 +295,7 @@
                 gradeHint.innerText = '✏️ 小學一二年級挑戰';
                 gradeHint.style.backgroundColor = '#ffe0b2';
                 prefixText.innerText = '剩下 ';
+                document.getElementById('suffix-text').innerText = '杯';
 
                 // 一二年級：減法題型
                 const total = Math.floor(Math.random() * 10) + 5; // 5~14杯
@@ -308,10 +311,11 @@
                     cup.style.fontSize = "40px"; // 縮小預設杯子
                     area.appendChild(cup);
                 }
-            } else {
+            } else if (currentGrade === 3) {
                 gradeHint.innerText = '✏️ 小學三四年級挑戰';
                 gradeHint.style.backgroundColor = '#c8e6c9';
                 prefixText.innerText = '共有 ';
+                document.getElementById('suffix-text').innerText = '杯';
 
                 // 讓三四年級畫面更緊湊
                 area.style.gap = '5px';
@@ -341,6 +345,94 @@
                         boxDiv.appendChild(cup);
                     }
                     area.appendChild(boxDiv);
+                }
+            } else if (currentGrade === 8) {
+                gradeHint.innerText = '🔥 國中八年級挑戰';
+                gradeHint.style.backgroundColor = '#ffbb00';
+
+                // 隨機選擇一種八年級題型：0 = 畢氏定理, 1 = 平方根, 2 = 一元二次方程式
+                const type = Math.floor(Math.random() * 3);
+                if (type === 0) {
+                    // 畢氏定理
+                    const triples = [
+                        [3, 4, 5],
+                        [5, 12, 13],
+                        [6, 8, 10],
+                        [8, 15, 17],
+                        [7, 24, 25],
+                        [9, 12, 15]
+                    ];
+                    const choice = triples[Math.floor(Math.random() * triples.length)];
+                    const askHypotenuse = Math.random() > 0.5;
+                    if (askHypotenuse) {
+                        const side1 = choice[0];
+                        const side2 = choice[1];
+                        remainingCups = choice[2]; // 答案
+                        prefixText.innerText = '斜邊長 ';
+                        document.getElementById('suffix-text').innerText = '公分';
+                        document.getElementById('question').innerText = `苦茶店設計了一個直角三角形招牌，兩直角邊分別為 ${side1} 公分和 ${side2} 公分，請問斜邊長為多少公分？`;
+                        area.innerHTML = `
+                            <svg width="200" height="150" style="display:block; margin: 10px auto;">
+                                <polygon points="40,120 180,120 40,20" style="fill:#fff3e0;stroke:#e65100;stroke-width:3" />
+                                <path d="M 40 110 L 50 110 L 50 120" fill="none" stroke="#e65100" stroke-width="2"/>
+                                <text x="20" y="75" fill="#e65100" font-weight="bold" font-size="16">${side1}</text>
+                                <text x="100" y="140" fill="#e65100" font-weight="bold" font-size="16">${side2}</text>
+                                <text x="120" y="65" fill="#d84315" font-weight="bold" font-size="18">?</text>
+                            </svg>
+                        `;
+                    } else {
+                        const side1 = choice[0];
+                        remainingCups = choice[1]; // 答案
+                        const hyp = choice[2];
+                        prefixText.innerText = '另一股長 ';
+                        document.getElementById('suffix-text').innerText = '公分';
+                        document.getElementById('question').innerText = `苦茶店的直角三角形招牌斜邊長 ${hyp} 公分，其中一股為 ${side1} 公分，請問另一股長為多少公分？`;
+                        area.innerHTML = `
+                            <svg width="200" height="150" style="display:block; margin: 10px auto;">
+                                <polygon points="40,120 180,120 40,20" style="fill:#fff3e0;stroke:#e65100;stroke-width:3" />
+                                <path d="M 40 110 L 50 110 L 50 120" fill="none" stroke="#e65100" stroke-width="2"/>
+                                <text x="20" y="75" fill="#e65100" font-weight="bold" font-size="16">${side1}</text>
+                                <text x="100" y="140" fill="#d84315" font-weight="bold" font-size="18">?</text>
+                                <text x="120" y="65" fill="#e65100" font-weight="bold" font-size="16">${hyp}</text>
+                            </svg>
+                        `;
+                    }
+                } else if (type === 1) {
+                    // 平方根
+                    const side = Math.floor(Math.random() * 12) + 4; // 邊長 4~15
+                    const areaVal = side * side;
+                    remainingCups = side; // 答案
+                    prefixText.innerText = '邊長 ';
+                    document.getElementById('suffix-text').innerText = '公分';
+                    document.getElementById('question').innerText = `店長打算做一個面積為 ${areaVal} 平方公分的正方形苦茶凍，請問該苦茶凍的邊長應為多少公分？`;
+                    area.innerHTML = `
+                        <svg width="150" height="150" style="display:block; margin: 10px auto;">
+                            <rect x="15" y="15" width="120" height="120" style="fill:#efebe9;stroke:#4e342e;stroke-width:4;rx:10;ry:10" />
+                            <text x="75" y="75" dominant-baseline="middle" text-anchor="middle" fill="#4e342e" font-weight="bold" font-size="18">面積 = ${areaVal}</text>
+                            <text x="75" y="145" dominant-baseline="middle" text-anchor="middle" fill="#d84315" font-weight="bold" font-size="18">邊長 = ?</text>
+                        </svg>
+                    `;
+                } else {
+                    // 一元二次方程式
+                    const ans = Math.floor(Math.random() * 8) + 8; // 答案 8~15
+                    const diff = Math.floor(Math.random() * 3) + 2; // 差 2~4
+                    const totalVal = ans * (ans - diff);
+                    remainingCups = ans; // 答案
+
+                    prefixText.innerText = '價格 x = ';
+                    document.getElementById('suffix-text').innerText = '元';
+                    document.getElementById('question').innerText = `苦茶店特調每杯 x 元，小明買了 (x - ${diff}) 杯，結帳時共付了 ${totalVal} 元。已知單價 x 大於 ${diff}，求單價 x 為多少元？`;
+                    area.innerHTML = `
+                        <div style="border: 2px dashed #8b4513; padding: 15px; border-radius: 15px; background-color: #efebe9; max-width: 250px; margin: 10px auto; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                            <div style="font-weight: bold; color: #4e342e; border-bottom: 2px solid #4e342e; padding-bottom: 5px; margin-bottom: 10px; font-size:18px;">📋 G8苦茶店結帳單</div>
+                            <div style="text-align: left; font-size: 16px; color: #4e342e; line-height: 1.6;">
+                                單價：<span style="color:#d84315; font-weight:bold;">x</span> 元 / 杯<br/>
+                                數量：<span style="color:#d84315; font-weight:bold;">x - ${diff}</span> 杯<br/>
+                                <hr style="border:none; border-top:1px dashed #4e342e; margin:8px 0;"/>
+                                總計：<span style="font-weight:bold; font-size:18px; color:#d84315;">${totalVal}</span> 元
+                            </div>
+                        </div>
+                    `;
                 }
             }
             document.getElementById('answer-input').focus();
