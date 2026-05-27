@@ -199,6 +199,8 @@
                 <button class="btn" onclick="startGame(1)">小學一二年級</button>
                 <button class="btn" style="background-color: #4caf50; color: white;"
                     onclick="startGame(3)">小學三四年級</button>
+                <button class="btn" style="background-color: #2196f3; color: white;"
+                    onclick="startGame(5)">小學五年級</button>
                 <button class="btn" style="background-color: #e65100; color: white;"
                     onclick="startGame(8)">國中八年級</button>
             </div>
@@ -287,6 +289,8 @@
             // 重置預設樣式
             area.style.gap = '';
             area.style.padding = '';
+            area.style.flexDirection = '';
+            area.style.alignItems = '';
 
             const gradeHint = document.getElementById('grade-hint');
             const prefixText = document.getElementById('prefix-text');
@@ -345,6 +349,143 @@
                         boxDiv.appendChild(cup);
                     }
                     area.appendChild(boxDiv);
+                }
+            } else if (currentGrade === 5) {
+                gradeHint.innerText = '📘 小學五年級挑戰';
+                gradeHint.style.backgroundColor = '#bbdefb';
+
+                // Helper functions
+                function getGcd(x, y) {
+                    while(y) {
+                        let t = y;
+                        y = x % y;
+                        x = t;
+                    }
+                    return x;
+                }
+                function getLcm(x, y) {
+                    return (x * y) / getGcd(x, y);
+                }
+
+                // 隨機選擇一種五年級題型：0 = 最大公因數, 1 = 最小公倍數, 2 = 長方體體積
+                const type = Math.floor(Math.random() * 3);
+                if (type === 0) {
+                    // 最大公因數 (平分苦茶)
+                    const common = Math.floor(Math.random() * 5) + 3; // GCD: 3 ~ 7
+                    let m1 = Math.floor(Math.random() * 3) + 2; // 2 ~ 4
+                    let m2 = Math.floor(Math.random() * 3) + 2; // 2 ~ 4
+                    while (getGcd(m1, m2) !== 1) {
+                        m2 = Math.floor(Math.random() * 3) + 2;
+                    }
+                    const a = common * m1;
+                    const b = common * m2;
+                    remainingCups = common; // 答案
+
+                    prefixText.innerText = '最多分給 ';
+                    document.getElementById('suffix-text').innerText = '人';
+                    document.getElementById('question').innerText = `店長要把 ${a} 杯原味苦茶和 ${b} 杯仙草苦茶平分給客人，每人分到的兩種苦茶數量要一樣且剛好分完，最多可分給幾人？`;
+
+                    // Render cups side by side
+                    let greenCups = '🍵'.repeat(a).split('').map(emoji => `<span style="font-size:20px; margin:1px;">${emoji}</span>`).join('');
+                    let brownCups = '🫖'.repeat(b).split('').map(emoji => `<span style="font-size:20px; margin:1px;">${emoji}</span>`).join('');
+
+                    area.style.flexDirection = 'column';
+                    area.style.alignItems = 'stretch';
+                    area.innerHTML = `
+                        <div style="display:flex; justify-content:space-around; width:100%; text-align:center;">
+                            <div style="width:45%; background:#e8f5e9; border-radius:12px; padding:10px;">
+                                <div style="font-weight:bold; color:#2e7d32; font-size:14px; margin-bottom:5px;">原味苦茶: ${a} 杯</div>
+                                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2px;">
+                                    ${greenCups}
+                                </div>
+                            </div>
+                            <div style="width:2px; background:#e0e0e0; margin: 0 10px;"></div>
+                            <div style="width:45%; background:#efebe9; border-radius:12px; padding:10px;">
+                                <div style="font-weight:bold; color:#4e342e; font-size:14px; margin-bottom:5px;">仙草苦茶: ${b} 杯</div>
+                                <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:2px;">
+                                    ${brownCups}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (type === 1) {
+                    // 最小公倍數 (進貨週期)
+                    const cycles = [
+                        [3, 4], [3, 5], [4, 5], [4, 6], [5, 6]
+                    ];
+                    const choice = cycles[Math.floor(Math.random() * cycles.length)];
+                    const a = choice[0];
+                    const b = choice[1];
+                    const lcmVal = getLcm(a, b);
+                    remainingCups = lcmVal; // 答案
+
+                    prefixText.innerText = '最少過 ';
+                    document.getElementById('suffix-text').innerText = '天';
+                    document.getElementById('question').innerText = `苦茶店的茶葉每 ${a} 天進貨一次，蜂蜜每 ${b} 天進貨一次。今天剛好同一天進貨，最少過幾天兩者會再次在同一天進貨？`;
+
+                    // Generate a beautiful calendar grid showing the periods
+                    let calendarHTML = '';
+                    const maxDays = Math.min(lcmVal + 6, 24); // Show a few days past the LCM up to 24 days
+                    for (let d = 1; d <= maxDays; d++) {
+                        let markers = '';
+                        if (d % a === 0) markers += '🍃';
+                        if (d % b === 0) markers += '🍯';
+                        
+                        let bgColor = '#ffffff';
+                        let borderStyle = '1px solid #e0e0e0';
+                        if (d === lcmVal) {
+                            bgColor = '#ffe082';
+                            borderStyle = '2px solid #ffb300';
+                        }
+                        
+                        calendarHTML += `
+                            <div style="border: ${borderStyle}; border-radius: 8px; padding: 4px; background: ${bgColor}; min-height: 45px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.05); box-sizing:border-box;">
+                                <span style="font-size: 10px; color: #888; font-weight:bold;">第 ${d} 天</span>
+                                <span style="font-size: 14px; margin-top:2px;">${markers || '&nbsp;'}</span>
+                            </div>
+                        `;
+                    }
+
+                    area.style.flexDirection = 'column';
+                    area.style.alignItems = 'center';
+                    area.innerHTML = `
+                        <div style="font-size:12px; color:#666; margin-bottom:8px;">圖例：🍃 茶葉進貨日 (每 ${a} 天) | 🍯 蜂蜜進貨日 (每 ${b} 天)</div>
+                        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; max-width: 320px; margin: 0 auto;">
+                            ${calendarHTML}
+                        </div>
+                    `;
+                } else {
+                    // 長方體體積 (禮盒體積)
+                    const l = Math.floor(Math.random() * 6) + 5; // 5 ~ 10
+                    const w = Math.floor(Math.random() * 4) + 3; // 3 ~ 6
+                    const h = Math.floor(Math.random() * 3) + 2; // 2 ~ 4
+                    remainingCups = l * w * h; // 答案
+
+                    prefixText.innerText = '體積為 ';
+                    document.getElementById('suffix-text').innerText = '立方公分';
+                    document.getElementById('question').innerText = `店長訂製了一個長 ${l} 公分、寬 ${w} 公分、高 ${h} 公分的長方體苦茶禮盒，請問這個禮盒的體積是多少立方公分？`;
+
+                    // Isometric drawing of cuboid
+                    area.style.flexDirection = 'column';
+                    area.style.alignItems = 'center';
+                    area.innerHTML = `
+                        <svg width="220" height="150" style="display:block; margin: 0 auto;">
+                            <!-- Top face -->
+                            <polygon points="110,55 160,35 110,15 60,35" fill="#efebe9" stroke="#4e342e" stroke-width="2"/>
+                            <!-- Left face -->
+                            <polygon points="60,35 110,55 110,105 60,85" fill="#d7ccc8" stroke="#4e342e" stroke-width="2"/>
+                            <!-- Right face -->
+                            <polygon points="110,55 160,35 160,85 110,105" fill="#b0bec5" stroke="#4e342e" stroke-width="2"/>
+                            
+                            <!-- Dimension labels -->
+                            <!-- Length (left-down edge) -->
+                            <text x="50" y="70" fill="#4e342e" font-weight="bold" font-size="12" transform="rotate(20, 50, 70)">長 ${l} cm</text>
+                            <!-- Width (right-down edge) -->
+                            <text x="135" y="70" fill="#4e342e" font-weight="bold" font-size="12" transform="rotate(-20, 135, 70)">寬 ${w} cm</text>
+                            <!-- Height (vertical edge) -->
+                            <text x="115" y="85" fill="#4e342e" font-weight="bold" font-size="12">高 ${h} cm</text>
+                        </svg>
+                    `;
                 }
             } else if (currentGrade === 8) {
                 gradeHint.innerText = '🔥 國中八年級挑戰';
