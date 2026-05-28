@@ -386,8 +386,8 @@
                     document.getElementById('question').innerText = `店長要把 ${a} 杯原味苦茶和 ${b} 杯仙草苦茶平分給客人，每人分到的兩種苦茶數量要一樣且剛好分完，最多可分給幾人？`;
 
                     // Render cups side by side
-                    let greenCups = '🍵'.repeat(a).split('').map(emoji => `<span style="font-size:20px; margin:1px;">${emoji}</span>`).join('');
-                    let brownCups = '🫖'.repeat(b).split('').map(emoji => `<span style="font-size:20px; margin:1px;">${emoji}</span>`).join('');
+                    let greenCups = '<span style="font-size:20px; margin:1px;">🍵</span>'.repeat(a);
+                    let brownCups = '<span style="font-size:20px; margin:1px;">🫖</span>'.repeat(b);
 
                     area.style.flexDirection = 'column';
                     area.style.alignItems = 'stretch';
